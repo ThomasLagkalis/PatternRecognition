@@ -5,12 +5,15 @@ function [X_norm, mu, sigma] = featureNormalize(X)
 %   is 1. This is often a good preprocessing step to do when
 %   working with learning algorithms.
 
+[junk, nFeatures] = size(X);
 
-mu = % mean of each column (feature)
+for i=1:nFeatures
+    mu= mean(X(:, i)); % mean of each column (feature)
+    sigma= std(X(:, i)); % standart deviation of each column
+    X_norm(:,i) = (X(:,i) - mu)/sigma; % normalize each column independently
+end
 
-sigma = % standart deviation of each column
-X_norm = % normalize each column independently
-
+mu=mean(X_norm); sigma=std(X_norm);
 
 % ============================================================
 

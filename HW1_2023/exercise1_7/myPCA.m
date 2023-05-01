@@ -17,7 +17,8 @@ S = zeros(n);
 %
 % Note that the dataset X is normalized, when calculating the covariance
 
-
+C = (1/m)*transpose(X)*X;  % Covariance matrix (Identical to the autocorrelation because E[x]=0)
+[U, S] = eig(C);
 
 
 % =========================================================================

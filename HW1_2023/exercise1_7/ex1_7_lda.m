@@ -28,7 +28,7 @@ fprintf('Visualizing example dataset for LDA.\n\n');
 
 %  The following command loads the dataset. You should now have the 
 %  variable X in your environment
-load ('ex1_3_data1.mat');
+load ('data/data2.mat');
 
 %  Before running PCA, it is important to first normalize X
 [X_norm, mu, sigma] = featureNormalize(X);
@@ -140,9 +140,9 @@ iris_labels = 1*cellfun(@(x)isequal(x,'versicolor'),species)+2*cellfun(@(x)isequ
 [meas_norm, mu, sigma] = featureNormalize(meas);
 
 % Get the data for each class
-IRIS1 = 			%Samples of Class 0
-IRIS2 = 			%Samples of Class 1
-IRIS3 = 			%Samples of Class 2
+IRIS1 = meas(iris_labels==0, :); %Samples of Class 0
+IRIS2 = meas(iris_labels==1, :); %Samples of Class 1
+IRIS3 = meas(iris_labels==2, :); %Samples of Class 2
 
 
 %  Visualize the example dataset
@@ -151,6 +151,7 @@ hold on
 plot(IRIS1(:, 1), IRIS1(:, 2), 'bo');
 plot(IRIS2(:, 1), IRIS2(:, 2), 'rs');
 plot(IRIS3(:, 1), IRIS3(:, 2), 'g+');
+legend("setosa", "versicolor", "virginica")
 hold off
 
 NewDim = 2; %The new feature dimension after applying LDA
@@ -163,7 +164,10 @@ v = myLDA(meas_norm, iris_labels, NewDim);
 %  Use different color/symbol for each class
 figure(4)
 hold on
-
+    plot(meas_reduced(iris_labels==0, 1), meas_reduced(iris_labels==0, 2), 'bo');
+    plot(meas_reduced(iris_labels==1, 1), meas_reduced(iris_labels==1, 2), 'rs');
+    plot(meas_reduced(iris_labels==2, 1), meas_reduced(iris_labels==2, 2), 'g+');
+    legend("setosa", "versicolor", "virginica")
 hold off
 
 
