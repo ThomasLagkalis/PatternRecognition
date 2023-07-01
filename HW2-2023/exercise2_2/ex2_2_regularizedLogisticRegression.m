@@ -24,7 +24,7 @@ clear ; close all; clc
 %  The first two columns contains the X values and the third column
 %  contains the label (y).
 
-data = load('ex3_3_data2.txt');
+data = load('ex2_2_data2.txt');
 X = data(:, [1, 2]); y = data(:, 3);
 
 plotData(X, y);

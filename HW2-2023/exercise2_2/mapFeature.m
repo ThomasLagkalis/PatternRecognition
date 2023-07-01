@@ -13,5 +13,13 @@ function out = mapFeature(X1, X2)
 degree = 6;
 out = ones(length(X1(:,1)), 28);
 
+k=0;
+for i=0:degree
+    for j=0:i
+        k=k+1;
+        out(:,k) = (X1.^(i-j)).*(X2.^j);
+    end
+end
+
 
 end
