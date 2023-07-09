@@ -23,6 +23,13 @@ idx = zeros(m, 1);
 % Note: You can use a for-loop over the examples to compute this.
 %
 
+for i=1:m
+    for j=1:K
+        e(j,:) = norm(X(i,:)-centroids(j,:));
+    end
+    [junk, ind] = min(e);
+    idx(i)=ind;
+end
 
 
 % =============================================================

@@ -1,9 +1,10 @@
 ## Tutor: Vassilis Diakoloukas 
 ## Year: 2022
 
+from ctypes import sizeof
 import numpy as np
 from keras.datasets import mnist
-from keras.utils import np_utils
+from keras.utils import to_categorical
 import matplotlib.pyplot as plt
 
 # Neural Network Dense (Fully Connected) Layer without activation
@@ -16,7 +17,7 @@ class Dense():
     def forward(self, input):
         self.input = input
         # Add Code Here
-        fwd =
+        fwd = np.dot(self.weights, input) + self.bias
         return fwd
 
     #Backward Propagation on a Dense Layer
@@ -26,17 +27,17 @@ class Dense():
     # dE_dX is dE/dX Gradient
     def backward(self, dE_dY, learning_rate):
         # Add Code Here
-        dE_dW =
-        dE_dX =
-        dE_dB =
+        dE_dW = np.dot(dE_dY, self.input.T)
+        dE_dX = np.dot(self.weights.T, dE_dY)
+        dE_dB = np.sum(dE_dY, axis=1, keepdims=True)
         self.update_weights(dE_dW, dE_dB, learning_rate)
         return dE_dX
 
     # Update Layer Weights and bias
     def update_weights(self, dE_dW, dE_dB, learning_rate):
         # Add Code Here
-        self.weights =
-        self.bias =
+        self.weights = self.weights - learning_rate*dE_dW
+        self.bias = self.bias - learning_rate*dE_dB
 
 
 # Neural Network Activation Layer Abstract Class
@@ -52,13 +53,13 @@ class Activation():
     def forward(self, input):
         self.input = input
         # Add Code Here
-        Y =
+        Y = self.activation(input)
         return Y
 
     # Backward estimation of dE/dX using the activation prime (derivative)
     def backward(self, dE_dY, learning_rate):
         # Add Code Here
-        dE_dX =
+        dE_dX = self.activation_grad(self.input) * dE_dY
         return dE_dX
  
 
@@ -70,7 +71,7 @@ class Softmax():
         self.output = tmp / np.sum(tmp)
         return self.output
 
-    def backward(self, output_gradient):
+    def backward(self, output_gradient, junk):
         n = np.size(self.output)
         return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
 
@@ -84,7 +85,7 @@ class Tanh(Activation):
 
         def tanh_grad(x):
             # Add Code Here
-            actGrad =
+            actGrad = np.square(2/(np.exp(x)+np.exp(-x)))
             return actGrad
 
         super().__init__(tanh, tanh_grad)
@@ -96,14 +97,14 @@ class Sigmoid(Activation):
         # Logistic Activation Function
         def sigmoid(x):
             # Add Code Here
-            act =
+            act = 1/(1+np.exp(-x))
             return act
 
         # Activation Function Gradient (Derivative)
         def sigmoid_grad(x):
             # Add Code Here
 
-            actGrad =
+            actGrad = sigmoid(x) * (1 - sigmoid(x))
             return actGrad
 
         super().__init__(sigmoid, sigmoid_grad)
@@ -112,23 +113,36 @@ class Sigmoid(Activation):
 # Return the the cross entropy loss
 def loss_cross_entropy(y_true, y_pred):
     # Add Code Here
-    loss =
+    
+    epsilon = 1e-7  # small value to avoid division by zero
+
+    # Add a small epsilon to the predicted probabilities to avoid log(0)
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+
+    # Calculate the cross-entropy loss
+    loss = - np.mean(np.sum(y_true * np.log(y_pred), axis=0)) 
     return loss
 
 # Return the derivative of the cross entropy loss
 def loss_cross_entropy_grad(y_true, y_pred):
     # Add Code Here
-    lossGrad =
+
+    epsilon = 1e-7  # small value to avoid division by zero
+    # Add a small epsilon to the predicted probabilities to avoid log(0)
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+
+    # Calculate the gradient of the cross-entropy loss
+    lossGrad = - (y_true / y_pred)
     return lossGrad
 
 def mse(y_true, y_pred):
     # Add Code Here
-    loss =
+    loss = np.sum(np.square(y_true - y_pred))/len(y_pred)
     return loss
 
 def mse_grad(y_true, y_pred):
     # Add Code Here
-    lossGrad =
+    lossGrad = -2*(y_true-y_pred)
     return lossGrad
 
 def preprocess_data(x, y, limit):
@@ -137,7 +151,7 @@ def preprocess_data(x, y, limit):
     x = x.astype("float32") / 255
     # encode output which is a number in range [0,9] into a vector of size 10
     # e.g. number 3 will become [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
-    y = np_utils.to_categorical(y)
+    y = to_categorical(y)
     y = y.reshape(y.shape[0], 10, 1)
     return x[:limit], y[:limit]
 
@@ -211,7 +225,7 @@ x_test, y_test = preprocess_data(x_test, y_test, 20)
 network = [
     Dense(28 * 28, 50),
     Sigmoid(),
-    Dense(50, 10),
+    Dense(50,10),
     Softmax()
 ]
 
