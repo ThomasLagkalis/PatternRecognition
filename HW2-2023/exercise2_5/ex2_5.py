@@ -231,7 +231,7 @@ network = [
 
 # train the network using the input data and stochastic Gradient Descent
 # Define different learning rates, epochs and batch_size to experiment with
-train(network, x_train, y_train, epochs=100, learning_rate=0.1, batch_size = 128)
+train(network, x_train, y_train, epochs=100, learning_rate=0.001, batch_size = 128)
 
 # Evaluate performance on test data
 for x, y in zip(x_test, y_test):

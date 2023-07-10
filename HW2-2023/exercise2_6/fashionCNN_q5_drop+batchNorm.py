@@ -1,3 +1,4 @@
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 # TensorFlow and tf.keras
@@ -35,23 +36,32 @@ test_images_reshaped = np.reshape(test_images, (10000, 28, 28, 1)) # reshape
 
 model = keras.Sequential([
 
-    keras.layers.Conv2D(filters=32, strides=1,kernel_size=(3,3), padding="same", input_shape=(28,28,1), activation='relu'), #Conv1
+    keras.layers.Conv2D(filters=32, strides=1,kernel_size=(3,3), padding="same", input_shape=(28,28,1)), #Conv1
     keras.layers.BatchNormalization(),
-    keras.layers.Conv2D(filters=32, strides=1,kernel_size=(3,3), padding="same", input_shape=(28,28,1), activation='relu'), #conv2
+    keras.layers.Activation('relu'),
+    keras.layers.Conv2D(filters=32, strides=1,kernel_size=(3,3), padding="same", input_shape=(28,28,1)), #conv2
     keras.layers.BatchNormalization(),
+    keras.layers.Activation('relu'),
     keras.layers.MaxPool2D(pool_size=(2,2), padding="valid"), #Max_Pool1
-    keras.layers.Conv2D(filters=64, strides=1, padding="same", kernel_size=(3,3), input_shape=(14,14,32), activation='relu'), #Conv3
+    keras.layers.Dropout(0.2),
+    keras.layers.Conv2D(filters=64, strides=1, padding="same", kernel_size=(3,3), input_shape=(14,14,32)), #Conv3
     keras.layers.BatchNormalization(),
-    keras.layers.Conv2D(filters=64, strides=1, padding="same", kernel_size=(3,3), input_shape=(14,14,64), activation='relu'), #Conv4
+    keras.layers.Activation('relu'),
+    keras.layers.Conv2D(filters=64, strides=1, padding="same", kernel_size=(3,3), input_shape=(14,14,64)), #Conv4
     keras.layers.BatchNormalization(),
+    keras.layers.Activation('relu'),
     keras.layers.MaxPool2D(pool_size=(2,2), padding="valid"), #MaxPool2
-    keras.layers.Conv2D(filters=128, strides=1, padding="same", kernel_size=(3,3), input_shape=(7,7,64), activation='relu'), #Conv5
+    keras.layers.Dropout(0.3),
+    keras.layers.Conv2D(filters=128, strides=1, padding="same", kernel_size=(3,3), input_shape=(7,7,64)), #Conv5
     keras.layers.BatchNormalization(),
+    keras.layers.Activation('relu'),
     keras.layers.MaxPool2D(pool_size=(2,2), padding="valid"), #MaxPool3
+    keras.layers.Dropout(0.4),
     keras.layers.Flatten(input_shape=(3,3,128)), #Flat Layer
     keras.layers.Dense(units=1152, activation='relu'), #Dense1
     keras.layers.BatchNormalization(),
     keras.layers.Dense(units=200, activation='relu'), #Dense2
+    keras.layers.Dropout(0.5),
     keras.layers.Dense(units=10, activation="softmax")
 ]) # fill the model
 
@@ -84,8 +94,3 @@ probability_model = tf.keras.Sequential([model,
 predictions = probability_model.predict(test_images_reshaped)
 
 plot_some_predictions(test_images, test_labels, predictions, class_names, num_rows=5, num_cols=3)
-
-
-
-
-
